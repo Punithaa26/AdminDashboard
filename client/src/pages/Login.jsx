@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "../utils/constant";
+import { showSuccessToast, showErrorToast } from "../utils/toastUtil";
+import { useEffect } from "react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const [error, setError] = useState("");
 
   const handleLogin = async () => {
     try {
@@ -20,16 +21,29 @@ const Login = () => {
 
       localStorage.setItem("token", data.data.token);
       localStorage.setItem("user", JSON.stringify(data.data.user));
-
+      showSuccessToast("Login successful");
       if (data.data.user.role === "admin") {
         navigate("/admin");
       } else {
         navigate("/welcome");
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Login failed");
+      console.log(err);
+      showErrorToast(err?.response?.data?.message || "Login failed");
     }
   };
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (token && user?.role) {
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/welcome");
+      }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#121212] text-white">
@@ -60,8 +74,6 @@ const Login = () => {
             />
           </div>
         </div>
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <Button
           onClick={handleLogin}

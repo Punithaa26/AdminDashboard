@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "../utils/constant";
+import { showSuccessToast, showErrorToast } from "../utils/toastUtil";
+import { useEffect } from "react";
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -13,17 +15,29 @@ const Signup = () => {
     role: "user",
   });
   const navigate = useNavigate();
-  const [error, setError] = useState("");
 
   const handleSignup = async () => {
     try {
       await axios.post(`${BASE_URL}/api/auth/signup`, form);
+      showSuccessToast("Signup successfull");
       navigate("/login");
     } catch (err) {
-        console.log(err);
-      setError(err?.response?.data?.message || "Signup failed");
+      console.log(err);
+      showErrorToast(err?.response?.data?.message || "Signup failed");
     }
   };
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (token && user?.role) {
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/welcome");
+      }
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#121212] text-white">
@@ -76,8 +90,6 @@ const Signup = () => {
             </select>
           </div>
         </div>
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <Button
           onClick={handleSignup}

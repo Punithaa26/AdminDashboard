@@ -14,7 +14,7 @@ const sendResponse = (res, statusCode, success, message, data = null) => {
 exports.signup = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return sendResponse(res, 400, false, "Validation failed", errors.array());
+    return sendResponse(res, 400, false, errors.array()[0].msg, errors.array());
   }
 
   const { username, email, password, role } = req.body;

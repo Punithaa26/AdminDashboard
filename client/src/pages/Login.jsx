@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BASE_URL } from "../utils/constant";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/login", {
+      const { data } = await axios.post(`${BASE_URL}/api/auth/login`, {
         email,
         password,
       });
@@ -33,32 +34,47 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#121212] text-white">
       <div className="w-full max-w-md bg-white/5 backdrop-blur-md p-8 rounded-xl shadow-lg space-y-6 border border-white/10">
-        <h2 className="text-2xl font-semibold text-center text-[#00FFFF]">Admin Login</h2>
+        <h2 className="text-2xl font-semibold text-center text-[#00FFFF]">
+          Admin Login
+        </h2>
+        <div className="relative w-full rounded-md p-[2px] bg-gradient-to-r from-[#00FFFF] to-[#39FF14]">
+          <div className="bg-black rounded-md">
+            <Input
+              type="email"
+              placeholder="Email"
+              className="w-full text-white placeholder:text-white/50 border-none focus:ring-0 focus:outline-none rounded-md"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+        </div>
 
-        <Input
-          type="email"
-          placeholder="Email"
-          className="bg-black/40 text-white placeholder:text-white/50 border border-[#00FFFF]"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <Input
-          type="password"
-          placeholder="Password"
-          className="bg-black/40 text-white placeholder:text-white/50 border border-[#00FFFF]"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="relative w-full rounded-md p-[2px] bg-gradient-to-r from-[#00FFFF] to-[#39FF14]">
+          <div className="bg-black rounded-md">
+            <Input
+              type="password"
+              placeholder="Password"
+              className="w-full text-white placeholder:text-white/50 border-none focus:ring-0 focus:outline-none rounded-md"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
-        <Button onClick={handleLogin} className="w-full bg-[#00FFFF] hover:bg-[#00e6e6] text-black font-bold">
+        <Button
+          onClick={handleLogin}
+          className="w-full bg-gradient-to-r from-[#00FFFF] to-[#39FF14] hover:opacity-90 text-black font-bold"
+        >
           Login
         </Button>
 
         <p className="text-center text-sm text-white/60">
-          Don't have an account? <a href="/signup" className="text-[#39FF14]">Signup</a>
+          Don't have an account?{" "}
+          <a href="/signup" className="text-[#39FF14]">
+            Signup
+          </a>
         </p>
       </div>
     </div>

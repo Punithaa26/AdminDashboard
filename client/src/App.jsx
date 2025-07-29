@@ -1,13 +1,24 @@
-import { Button } from "@/components/ui/button"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
+import Welcome from "./pages/Welcome";
+
 
 function App() {
+  const user = localStorage.getItem("user") ;
+
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <p className="text-red-500">lorem</p>
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vel inventore consequuntur sequi! Voluptatibus dicta ratione odio at quisquam accusamus! Provident recusandae ratione in unde accusamus temporibus ea ab sed accusantium.
-      <Button>Click me</Button>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={user ? (user.role === "admin" ? <Navigate to="/admin" /> : <Navigate to="/welcome" />) : <Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/admin" element={<Dashboard />} />
+        <Route path="/welcome" element={<Welcome />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

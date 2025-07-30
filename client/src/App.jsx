@@ -8,14 +8,14 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Welcome from "./pages/Welcome";
-import Analytics from "./pages/Analytics";
-import NotFound from "./pages/NotFound";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import NotFound from "./pages/NotFound";
+import Analytics from "./pages/Analytics";
+import AdminLayout from "./layouts/AdminLayout";
 
 function App() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = localStorage.getItem("user");
 
   return (
     <Router>
@@ -46,9 +46,16 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/admin" element={<Dashboard />} />
         <Route path="/welcome" element={<Welcome />} />
-        <Route path="/analytics" element={<Analytics />} />
+
+        {/* Admin Layout with Nested Routes */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="analytics" element={<Analytics />} />
+          {/* You can add more nested admin routes like users, logs etc */}
+        </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

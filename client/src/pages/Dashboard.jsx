@@ -1,5 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import RecentActivity from "../components/ui/RecentActivity";
+import QuickActions from "../components/ui/QuickActions";
+import SystemStatusWidget from "../components/ui/SystemStatusWidget";
+import StatsCards from "../components/ui/StatsCards";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -7,8 +11,6 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
-   console.log(token);
-   console.log(user);
     // Redirect if not logged in
     if (!token || !user) {
       navigate("/login");
@@ -21,8 +23,19 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="text-center text-lime p-10">
-      <h1 className="text-4xl font-bold">Welcome, Admin 👑</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-white">Welcome back, Admin 👋</h1>
+      <StatsCards />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <RecentActivity />
+        <QuickActions />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <SystemStatusWidget />
+        {/* Optionally place more widgets here */}
+      </div>
     </div>
   );
 };

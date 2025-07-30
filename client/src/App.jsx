@@ -8,11 +8,14 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Welcome from "./pages/Welcome";
+import Analytics from "./pages/Analytics";
+import NotFound from "./pages/NotFound";
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  const user = localStorage.getItem("user");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
     <Router>
@@ -23,7 +26,6 @@ function App() {
         closeOnClick
         draggable
         pauseOnHover
-        
         bodyClassName="text-sm"
         theme="dark"
       />
@@ -46,6 +48,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/admin" element={<Dashboard />} />
         <Route path="/welcome" element={<Welcome />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

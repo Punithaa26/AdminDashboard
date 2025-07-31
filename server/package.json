@@ -9,7 +9,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .js",
-    "seed": "node scripts/seedData.js"
+    "seed": "node scripts/seedingData.js"
   },
   "keywords": [
     "admin",

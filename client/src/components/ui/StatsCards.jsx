@@ -1,6 +1,6 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
-const StatsCards = () => {
+const StatsCards = ({data}) => {
   const IconComponents = {
     Eye: ({ className }) => (
       <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -23,15 +23,26 @@ const StatsCards = () => {
       </svg>
     )
   };
-
-  const stats = [
+ // Default values if data is not loaded
+  if (!data) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/10 animate-pulse">
+            <div className="h-16 bg-white/10 rounded"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+ const stats = [
     {
       id: 'engagement',
       title: 'Engagement Rate',
-      value: '84.2%',
-      change: '+12.5%',
-      changeText: 'from last week',
-      trend: 'up',
+      value: data.engagement?.value || '0%',
+      change: data.engagement?.change || '0%',
+      changeText: data.engagement?.changeText || 'from last week',
+      trend: data.engagement?.trend || 'up',
       icon: IconComponents.Eye,
       gradient: 'from-green-400 to-green-600',
       bgGradient: 'from-green-400/20 to-green-600/20'
@@ -39,10 +50,10 @@ const StatsCards = () => {
     {
       id: 'bounce',
       title: 'Bounce Rate',
-      value: '23.7%',
-      change: '+5.2%',
-      changeText: 'from last week',
-      trend: 'up',
+      value: data.bounce?.value || '0%',
+      change: data.bounce?.change || '0%',
+      changeText: data.bounce?.changeText || 'from last week',
+      trend: data.bounce?.trend || 'up',
       icon: IconComponents.Mouse,
       gradient: 'from-pink-400 to-pink-600',
       bgGradient: 'from-pink-400/20 to-pink-600/20'
@@ -50,10 +61,10 @@ const StatsCards = () => {
     {
       id: 'conversions',
       title: 'Conversions',
-      value: '1,247',
-      change: '-15.3%',
-      changeText: 'from last week',
-      trend: 'down',
+      value: data.conversions?.value || '0',
+      change: data.conversions?.change || '0%',
+      changeText: data.conversions?.changeText || 'from last week',
+      trend: data.conversions?.trend || 'down',
       icon: IconComponents.Cart,
       gradient: 'from-blue-400 to-blue-600',
       bgGradient: 'from-blue-400/20 to-blue-600/20'
@@ -61,10 +72,10 @@ const StatsCards = () => {
     {
       id: 'active-users',
       title: 'Active Users',
-      value: '15,892',
-      change: '+7.8%',
-      changeText: 'from last week',
-      trend: 'up',
+      value: data.activeUsers?.value || data.additional?.totalUsers?.toLocaleString() || '0',
+      change: data.activeUsers?.change || '0%',
+      changeText: data.activeUsers?.changeText || 'from yesterday',
+      trend: data.activeUsers?.trend || 'up',
       icon: IconComponents.Users,
       gradient: 'from-[#39FF14] to-green-500',
       bgGradient: 'from-[#39FF14]/20 to-green-500/20'

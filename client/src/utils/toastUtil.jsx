@@ -8,9 +8,9 @@ export const showSuccessToast = (message) => {
     </div>,
     {
       style: {
-        background: "#000",
-        border: "1px solid #22c55e", // Tailwind's green-500
-        color: "#22c55e",
+        background: "rgba(43, 42, 42, 1)",
+        border: "1px solid #d2c5c5ff", // Tailwind's green-500
+        color: "#19b819ff",
       },
     }
   );
@@ -23,8 +23,8 @@ export const showErrorToast = (message) => {
     </div>,
     {
       style: {
-        background: "#000",
-        border: "1px solid #ef4444", // Tailwind's red-500
+        background: "rgba(43, 42, 42, 1)",
+        border: "1px solid #d2c5c5ff", // Tailwind's red-500
         color: "#ef4444",
       },
     }

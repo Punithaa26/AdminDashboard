@@ -6,7 +6,7 @@ const { authenticateToken, logActivity } = require('../middlewares/auth.middlewa
 
 // Public routes
 router.post('/register', registerRateLimit, AuthController.register);
-router.post('/login', loginRateLimit, AuthController.login);
+router.post('/login', AuthController.login);
 router.post('/refresh-token', AuthController.refreshToken);
 
 // Protected routes

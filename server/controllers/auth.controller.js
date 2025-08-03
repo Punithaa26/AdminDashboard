@@ -12,8 +12,7 @@ const registerRateLimit = createRateLimit(60 * 60 * 1000, 3, 'Too many registrat
 class AuthController {
   static async register(req, res) {
     try {
-      const { username, email, password, role = 'user' } = req.body;
-
+      const { username, email, password, role } = req.body;
       // Validation
       if (!username || !email || !password) {
         return res.status(400).json({
@@ -55,7 +54,7 @@ class AuthController {
         username: username.trim(),
         email: email.toLowerCase().trim(),
         password: hashedPassword,
-        role: role === 'admin' && req.user?.role === 'admin' ? 'admin' : 'user',
+        role: ( role && role =="admin" )  ? 'admin' : 'user',
         deviceInfo: {
           ...deviceInfo,
           ip: req.ip || req.connection.remoteAddress

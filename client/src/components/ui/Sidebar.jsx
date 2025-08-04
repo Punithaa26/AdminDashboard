@@ -75,7 +75,7 @@ const Sidebar = () => {
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-[#00FFFF] to-[#39FF14] rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-[#e3dddc] rounded-lg flex items-center justify-center">
             <BarChart3 className="w-5 h-5 text-black" />
           </div>
           <span className="text-white text-xl font-bold">AdminCore</span>
@@ -93,8 +93,8 @@ const Sidebar = () => {
               onClick={() => handleNavigation(item.path)}
               className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all duration-200 ${
                 isActive
-                  ? "bg-gradient-to-r from-[#00FFFF]/20 to-[#39FF14]/20 text-[#00FFFF] border border-[#00FFFF]/30"
-                  : "text-white/70 hover:bg-white/5 hover:text-white"
+                  ? "border border-gray-300"
+                  : "text-gray-500 hover:border border-gray-300"
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -104,10 +104,10 @@ const Sidebar = () => {
         })}
       </nav>
       {/* Logout Button */}
-      <div className="px-4 mt-4">
+      <div className="px-4 m-4 border-t border-gray-100/10">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all duration-200 text-red-500 hover:bg-red-500/10"
+          className="w-full mt-4 flex items-center gap-3 p-3 rounded-lg text-left transition-all duration-200 text-red-500 hover:bg-red-500/10"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

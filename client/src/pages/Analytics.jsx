@@ -1,25 +1,26 @@
-import StatsCards from '../components/ui/StatsCards';
-import ContentPerformanceChart from '../components/ui/ContentPerformanceChart';
-import UserDistributionChart from '../components/ui/UserDistributionChart';
-import SystemPerformanceChart from '../components/ui/SystemPerformanceChart';
-import TopBar from '../components/ui/TopBar';
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import StatsCards from "../components/ui/StatsCards";
+import ContentPerformanceChart from "../components/ui/ContentPerformanceChart";
+import UserDistributionChart from "../components/ui/UserDistributionChart";
+import SystemPerformanceChart from "../components/ui/SystemPerformanceChart";
+import TopBar from "../components/ui/TopBar";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { showErrorToast, showSuccessToast } from '../utils/toastUtil';
-import { BASE_URL } from '../utils/constant';
+import { showErrorToast, showSuccessToast } from "../utils/toastUtil";
+import { BASE_URL } from "../utils/constant";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Analytics = () => {
   const [analyticsData, setAnalyticsData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [filters, setFilters] = useState({
-    timeRange: 'Last 7 Days',
-    category: 'All Categories'
+    timeRange: "Last 7 Days",
+    category: "All Categories",
   });
   const [filterOptions, setFilterOptions] = useState({
     timeRanges: [],
-    categories: []
+    categories: [],
   });
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -33,7 +34,7 @@ const Analytics = () => {
     const checkAuth = () => {
       const token = localStorage.getItem("token");
       const user = JSON.parse(localStorage.getItem("user") || "null");
-      
+
       // Redirect if not logged in
       if (!token || !user) {
         console.log("No token or user found, redirecting to login");
@@ -74,23 +75,23 @@ const Analytics = () => {
     return {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     };
   }, []);
 
   const fetchAnalyticsData = async (silent = false, isInitial = false) => {
     try {
       if (!silent) setLoading(true);
-      
+
       const config = getAuthConfig();
       const params = new URLSearchParams({
         timeRange: filters.timeRange,
-        category: filters.category
+        category: filters.category,
       });
 
       const response = await axios.get(
-        `${BASE_URL}/api/analytics-data/overview?${params}`, 
+        `${BASE_URL}/api/analytics-data/overview?${params}`,
         config
       );
 
@@ -98,17 +99,15 @@ const Analytics = () => {
         setAnalyticsData(response.data.data);
         setFilterOptions(response.data.data.filterOptions);
         setLastUpdated(new Date(response.data.data.metadata.lastUpdated));
-        
-        
       }
     } catch (error) {
-      console.error('Error fetching analytics data:', error);
-      
+      console.error("Error fetching analytics data:", error);
+
       // Only show error toast if not silent
       if (!silent) {
-        showErrorToast('Failed to load analytics data');
+        showErrorToast("Failed to load analytics data");
       }
-      
+
       // Handle authentication errors
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
@@ -125,7 +124,7 @@ const Analytics = () => {
     try {
       setLoading(true);
       setFilters(newFilters);
-      
+
       const config = getAuthConfig();
       const response = await axios.post(
         `${BASE_URL}/api/analytics-data/apply-filters`,
@@ -138,9 +137,9 @@ const Analytics = () => {
         setLastUpdated(new Date(response.data.data.timestamp));
       }
     } catch (error) {
-      console.error('Error applying filters:', error);
-      showErrorToast('Failed to apply filters');
-      
+      console.error("Error applying filters:", error);
+      showErrorToast("Failed to apply filters");
+
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -154,7 +153,7 @@ const Analytics = () => {
   const handleRefresh = async () => {
     try {
       setRefreshing(true);
-      
+
       const config = getAuthConfig();
       const response = await axios.post(
         `${BASE_URL}/api/analytics-data/refresh`,
@@ -167,9 +166,9 @@ const Analytics = () => {
         setLastUpdated(new Date(response.data.data.lastRefresh));
       }
     } catch (error) {
-      console.error('Error refreshing data:', error);
-      showErrorToast('Failed to refresh data');
-      
+      console.error("Error refreshing data:", error);
+      showErrorToast("Failed to refresh data");
+
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -180,37 +179,37 @@ const Analytics = () => {
     }
   };
 
-  const handleExport = async (format = 'json') => {
+  const handleExport = async (format = "json") => {
     try {
       const config = getAuthConfig();
       const params = new URLSearchParams({
         format,
-        timeRange: filters.timeRange
+        timeRange: filters.timeRange,
       });
 
       const response = await axios.get(
         `${BASE_URL}/api/analytics-data/export?${params}`,
         {
           ...config,
-          responseType: 'blob'
+          responseType: "blob",
         }
       );
 
       // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `analytics-${Date.now()}.${format}`);
+      link.setAttribute("download", `analytics-${Date.now()}.${format}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      
-      showSuccessToast('Analytics data exported successfully');
+
+      showSuccessToast("Analytics data exported successfully");
     } catch (error) {
-      console.error('Error exporting data:', error);
-      showErrorToast('Failed to export data');
-      
+      console.error("Error exporting data:", error);
+      showErrorToast("Failed to export data");
+
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -223,10 +222,15 @@ const Analytics = () => {
   if (!isInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#121212]">
-        <div className="text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00FFFF] mx-auto mb-4"></div>
           <div className="text-white text-xl">Checking authentication...</div>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -234,63 +238,115 @@ const Analytics = () => {
   if (loading && !analyticsData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#121212]">
-        <div className="text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center"
+        >
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00FFFF] mx-auto mb-4"></div>
           <div className="text-white text-xl">Loading analytics...</div>
-          <div className="text-white/60 text-sm mt-2">Fetching real-time data...</div>
-        </div>
+          <div className="text-white/60 text-sm mt-2">
+            Fetching real-time data...
+          </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 relative">
-      <TopBar 
-        filters={filters}
-        filterOptions={filterOptions}
-        onFilterChange={handleFilterChange}
-        onRefresh={handleRefresh}
-        onExport={handleExport}
-        refreshing={refreshing}
-        lastUpdated={lastUpdated}
-      />
+    <AnimatePresence mode="wait">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="space-y-6 relative"
+      >
+        {/* ADDED: Motion wrapper for TopBar */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
+          <TopBar
+            filters={filters}
+            filterOptions={filterOptions}
+            onFilterChange={handleFilterChange}
+            onRefresh={handleRefresh}
+            onExport={handleExport}
+            refreshing={refreshing}
+            lastUpdated={lastUpdated}
+          />
+        </motion.div>
 
-      {/* Stats Cards */}
-      <StatsCards 
-        data={analyticsData?.stats} 
-        loading={loading}
-      />
+        {/* Stats Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <StatsCards data={analyticsData?.stats} loading={loading} />
+        </motion.div>
+        {/* Charts Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <ContentPerformanceChart
+              data={analyticsData?.contentPerformance}
+              loading={loading}
+            />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <UserDistributionChart
+              data={analyticsData?.userDistribution}
+              loading={loading}
+            />
+          </motion.div>
+        </motion.div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ContentPerformanceChart 
-          data={analyticsData?.contentPerformance}
-          loading={loading}
-        />
-        <UserDistributionChart 
-          data={analyticsData?.userDistribution}
-          loading={loading}
-        />
-      </div>
+        {/* Full Width Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <SystemPerformanceChart
+            data={analyticsData?.systemPerformance}
+            loading={loading}
+          />
+        </motion.div>
 
-      {/* Full Width Chart */}
-      <SystemPerformanceChart 
-        data={analyticsData?.systemPerformance}
-        loading={loading}
-      />
-
-      {/* Real-time indicator */}
-      {analyticsData && (
-        <div className="fixed bottom-4 right-4 bg-white/5 backdrop-blur-md p-3 rounded-lg border border-white/10 z-40">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-white/70 text-sm">
-              Live • Last updated: {lastUpdated?.toLocaleTimeString()}
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
+        {/* Real-time indicator */}
+        {/* {analyticsData && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, x: 20 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.8 }}
+            className="fixed bottom-4 right-4 bg-white/5 backdrop-blur-md p-3 rounded-lg border border-white/10 z-40"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-white/70 text-sm">
+                Live • Last updated: {lastUpdated?.toLocaleTimeString()}
+              </span>
+            </div>
+          </motion.div>
+        )} */}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

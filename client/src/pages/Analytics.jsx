@@ -99,10 +99,7 @@ const Analytics = () => {
         setFilterOptions(response.data.data.filterOptions);
         setLastUpdated(new Date(response.data.data.metadata.lastUpdated));
         
-        // Only show success toast on initial load or manual refresh
-        if (isInitial) {
-          showSuccessToast('Analytics data loaded successfully');
-        }
+        
       }
     } catch (error) {
       console.error('Error fetching analytics data:', error);
@@ -139,7 +136,6 @@ const Analytics = () => {
       if (response.data.success) {
         setAnalyticsData(response.data.data);
         setLastUpdated(new Date(response.data.data.timestamp));
-        showSuccessToast('Filters applied successfully');
       }
     } catch (error) {
       console.error('Error applying filters:', error);
@@ -169,7 +165,6 @@ const Analytics = () => {
       if (response.data.success) {
         setAnalyticsData(response.data.data);
         setLastUpdated(new Date(response.data.data.lastRefresh));
-        showSuccessToast('Analytics data refreshed');
       }
     } catch (error) {
       console.error('Error refreshing data:', error);

@@ -917,6 +917,60 @@ const getContentAnalytics = async (req, res) => {
     });
   }
 };
+const getContentChartAnalytics = async (req, res) => {
+  try {
+    const [typeDistribution, statusDistribution] = await Promise.all([
+      Content.aggregate([
+        { $match: { isDeleted: { $ne: true } } },
+        {
+          $group: {
+            _id: "$type",
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1 } },
+      ]),
+      Content.aggregate([
+        { $match: { isDeleted: { $ne: true } } },
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1 } },
+      ]),
+    ]);
+
+    // Transform to expected format
+    const typeCounts = {};
+    typeDistribution.forEach((item) => {
+      typeCounts[item._id.toLowerCase()] = item.count;
+    });
+
+    const statusCounts = {};
+    statusDistribution.forEach((item) => {
+      statusCounts[item._id.toLowerCase()] = item.count;
+    });
+
+    res.json({
+      success: true,
+      data: {
+        typeCounts,
+        statusCounts,
+        typeDistribution,
+        statusDistribution,
+      },
+    });
+  } catch (error) {
+    console.error("Get content analytics error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch content analytics",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
 
 module.exports = {
   getAllContent,
@@ -933,4 +987,5 @@ module.exports = {
   getTags,
   getContentStats,
   getContentAnalytics,
+  getContentChartAnalytics,
 };

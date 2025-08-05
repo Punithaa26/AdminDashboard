@@ -19,9 +19,25 @@ import {
   Save,
   AlertCircle,
   Loader,
+  BarChart3,
+  PieChart,
 } from "lucide-react";
+import {
+  PieChart as RechartsPieChart,
+  Cell,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  Pie,
+} from "recharts";
 import { BASE_URL } from "../utils/constant";
 
+// Replace with your actual base URL
 
 // API Service
 const api = axios.create({
@@ -110,7 +126,7 @@ const Dropdown = ({ options, value, onChange, placeholder }) => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white text-sm flex items-center justify-between min-w-[120px]"
+        className="bg-white-800 border border-gray-600 rounded-lg px-4 py-2 text-white text-sm flex items-center justify-between min-w-[120px]"
       >
         {value || placeholder}
         <svg
@@ -178,7 +194,7 @@ const Modal = ({ isOpen, onClose, title, children, size = "md" }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className={`bg-gray-800 rounded-xl border border-gray-700 shadow-2xl w-full ${sizeClasses[size]} max-h-[90vh] overflow-hidden`}
+            className={`bg-gray-500/10 rounded-xl border border-gray-700 shadow-2xl w-full ${sizeClasses[size]} max-h-[90vh] overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between p-6 border-b border-gray-700">
@@ -219,10 +235,13 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = "Title is required";
-    if (!formData.description.trim()) newErrors.description = "Description is required";
-    if (formData.title.length < 3) newErrors.title = "Title must be at least 3 characters";
-    if (formData.description.length < 10) newErrors.description = "Description must be at least 10 characters";
-    
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+    if (formData.title.length < 3)
+      newErrors.title = "Title must be at least 3 characters";
+    if (formData.description.length < 10)
+      newErrors.description = "Description must be at least 10 characters";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -232,16 +251,19 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
     if (validateForm()) {
       const submitData = {
         ...formData,
-        tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag),
+        tags: formData.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag),
       };
       onSubmit(submitData);
     }
   };
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: null }));
+      setErrors((prev) => ({ ...prev, [field]: null }));
     }
   };
 
@@ -256,7 +278,7 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
             type="text"
             value={formData.title}
             onChange={(e) => handleChange("title", e.target.value)}
-            className={`w-full bg-gray-700 border ${
+            className={`w-full bg-white-700 border ${
               errors.title ? "border-red-500" : "border-gray-600"
             } rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500`}
             placeholder="Enter content title"
@@ -273,12 +295,12 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
           <select
             value={formData.type}
             onChange={(e) => handleChange("type", e.target.value)}
-            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
+            className="w-full bg-white-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
           >
-            <option value="Article">Article</option>
-            <option value="Video">Video</option>
-            <option value="Document">Document</option>
-            <option value="Image">Image</option>
+            <option value="Article" className="text-black">Article</option>
+            <option value="Video" className="text-black">Video</option>
+            <option value="Document" className="text-black">Document</option>
+            <option value="Image" className="text-black">Image</option>
           </select>
         </div>
 
@@ -289,12 +311,12 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
           <select
             value={formData.status}
             onChange={(e) => handleChange("status", e.target.value)}
-            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
+            className="w-full bg-white-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
           >
-            <option value="Draft">Draft</option>
-            <option value="Pending">Pending</option>
-            <option value="Published">Published</option>
-            <option value="Rejected">Rejected</option>
+            <option value="Draft" className="text-black">Draft</option>
+            <option value="Pending" className="text-black">Pending</option>
+            <option value="Published" className="text-black">Published</option>
+            <option value="Rejected" className="text-black">Rejected</option>
           </select>
         </div>
 
@@ -306,7 +328,7 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
             type="text"
             value={formData.category}
             onChange={(e) => handleChange("category", e.target.value)}
-            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
+            className="w-full bg-white-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
             placeholder="Enter category"
           />
         </div>
@@ -320,7 +342,7 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
           value={formData.description}
           onChange={(e) => handleChange("description", e.target.value)}
           rows={3}
-          className={`w-full bg-gray-700 border ${
+          className={`w-full bg-white-700 border ${
             errors.description ? "border-red-500" : "border-gray-600"
           } rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500`}
           placeholder="Enter content description"
@@ -338,7 +360,7 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
           type="text"
           value={formData.tags}
           onChange={(e) => handleChange("tags", e.target.value)}
-          className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
+          className="w-full bg-white-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
           placeholder="react, javascript, tutorial"
         />
       </div>
@@ -351,7 +373,7 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
           value={formData.content}
           onChange={(e) => handleChange("content", e.target.value)}
           rows={8}
-          className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
+          className="w-full bg-white-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
           placeholder="Enter main content..."
         />
       </div>
@@ -362,7 +384,7 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
             type="checkbox"
             checked={formData.featured}
             onChange={(e) => handleChange("featured", e.target.checked)}
-            className="w-4 h-4 text-cyan-600 bg-gray-700 border-gray-600 rounded focus:ring-cyan-500"
+            className="w-4 h-4 text-cyan-600 bg-white-700 border-gray-600 rounded focus:ring-cyan-500"
           />
           <span className="ml-2 text-sm text-gray-300">Featured Content</span>
         </label>
@@ -374,11 +396,11 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
           <select
             value={formData.visibility}
             onChange={(e) => handleChange("visibility", e.target.value)}
-            className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:border-cyan-500"
+            className="bg-white-700 border border-gray-600 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:border-cyan-500"
           >
-            <option value="public">Public</option>
-            <option value="private">Private</option>
-            <option value="restricted">Restricted</option>
+            <option value="public" className="text-black">Public</option>
+            <option value="private" className="text-black">Private</option>
+            <option value="restricted" className="text-black">Restricted</option>
           </select>
         </div>
       </div>
@@ -409,19 +431,28 @@ const ContentForm = ({ content, onSubmit, onCancel, loading }) => {
 const ContentDetails = ({ content }) => {
   const getTypeIcon = (type) => {
     switch (type) {
-      case "Video": return Video;
-      case "Document": return File;
+      case "Video":
+        return Video;
+      case "Document":
+        return File;
+      case "Image":
+        return Image;
       case "Article":
-      default: return FileText;
+      default:
+        return FileText;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Published": return "bg-green-500/20 text-green-400 border-green-500/30";
-      case "Pending": return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-      case "Rejected": return "bg-red-500/20 text-red-400 border-red-500/30";
-      default: return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+      case "Published":
+        return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "Pending":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+      case "Rejected":
+        return "bg-red-500/20 text-red-400 border-red-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
     }
   };
 
@@ -434,10 +465,16 @@ const ContentDetails = ({ content }) => {
           <TypeIcon className="w-6 h-6" />
         </div>
         <div className="flex-1">
-          <h3 className="text-xl font-semibold text-white mb-2">{content.title}</h3>
+          <h3 className="text-xl font-semibold text-white mb-2">
+            {content.title}
+          </h3>
           <p className="text-gray-300 mb-4">{content.description}</p>
           <div className="flex items-center space-x-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(content.status)}`}>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                content.status
+              )}`}
+            >
               {content.status}
             </span>
             <span className="text-sm text-gray-400">
@@ -454,19 +491,27 @@ const ContentDetails = ({ content }) => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-gray-700/50 rounded-lg p-4">
-          <div className="text-2xl font-bold text-cyan-400">{content.views}</div>
+          <div className="text-2xl font-bold text-cyan-400">
+            {content.views || 0}
+          </div>
           <div className="text-sm text-gray-400">Views</div>
         </div>
         <div className="bg-gray-700/50 rounded-lg p-4">
-          <div className="text-2xl font-bold text-green-400">{content.likes}</div>
+          <div className="text-2xl font-bold text-green-400">
+            {content.likes || 0}
+          </div>
           <div className="text-sm text-gray-400">Likes</div>
         </div>
         <div className="bg-gray-700/50 rounded-lg p-4">
-          <div className="text-2xl font-bold text-orange-400">{content.shares}</div>
+          <div className="text-2xl font-bold text-orange-400">
+            {content.shares || 0}
+          </div>
           <div className="text-sm text-gray-400">Shares</div>
         </div>
         <div className="bg-gray-700/50 rounded-lg p-4">
-          <div className="text-2xl font-bold text-purple-400">{content.comments}</div>
+          <div className="text-2xl font-bold text-purple-400">
+            {content.comments || 0}
+          </div>
           <div className="text-sm text-gray-400">Comments</div>
         </div>
       </div>
@@ -510,7 +555,9 @@ const ContentDetails = ({ content }) => {
           </div>
           <div>
             <span className="text-gray-400">Visibility:</span>
-            <span className="text-white ml-2 capitalize">{content.visibility}</span>
+            <span className="text-white ml-2 capitalize">
+              {content.visibility}
+            </span>
           </div>
         </div>
       </div>
@@ -522,28 +569,42 @@ const ContentDetails = ({ content }) => {
 const ContentRow = ({ content, index, onAction, loading }) => {
   const getTypeIcon = (type) => {
     switch (type) {
-      case "Video": return Video;
-      case "Document": return File;
+      case "Video":
+        return Video;
+      case "Document":
+        return File;
+      case "Image":
+        return Image;
       case "Article":
-      default: return FileText;
+      default:
+        return FileText;
     }
   };
 
   const getTypeColor = (type) => {
     switch (type) {
-      case "Video": return "bg-purple-500/20 text-purple-400 border-purple-500/30";
-      case "Document": return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+      case "Video":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+      case "Document":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+      case "Image":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
       case "Article":
-      default: return "bg-cyan-500/20 text-cyan-400 border-cyan-500/30";
+      default:
+        return "bg-cyan-500/20 text-cyan-400 border-cyan-500/30";
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Published": return "bg-green-500/20 text-green-400 border-green-500/30";
-      case "Pending": return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-      case "Rejected": return "bg-red-500/20 text-red-400 border-red-500/30";
-      default: return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+      case "Published":
+        return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "Pending":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+      case "Rejected":
+        return "bg-red-500/20 text-red-400 border-red-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
     }
   };
 
@@ -554,7 +615,7 @@ const ContentRow = ({ content, index, onAction, loading }) => {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
-      className="border-b border-gray-700/50 hover:bg-gray-800/50 transition-colors"
+      className="border-b bg-white-700 border-gray-700/50 hover:bg-gray-800/50 transition-colors"
     >
       <td className="p-4 text-gray-300 font-medium">{content.id}</td>
       <td className="p-4">
@@ -569,14 +630,18 @@ const ContentRow = ({ content, index, onAction, loading }) => {
         </div>
       </td>
       <td className="p-4">
-        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getTypeColor(content.type)}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium border ${getTypeColor(
+            content.type
+          )}`}
+        >
           {content.type}
         </span>
       </td>
       <td className="p-4">
         <div className="flex items-center space-x-2">
           <img
-            src={content.createdBy?.avatar || "https://images.unsplash.com/photo-1494790108755-2616b332c2cd?w=40&h=40&fit=crop&crop=face"}
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwiRqXhQGQGpAo3OPzxF0PKY-u1lm1Hg5c5w&s"
             alt={content.createdBy?.name || "User"}
             className="w-6 h-6 rounded-full object-cover"
           />
@@ -586,7 +651,11 @@ const ContentRow = ({ content, index, onAction, loading }) => {
         </div>
       </td>
       <td className="p-4">
-        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(content.status)}`}>
+        <span
+          className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+            content.status
+          )}`}
+        >
           {content.status}
         </span>
       </td>
@@ -674,7 +743,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, loading }) => {
             disabled={loading}
             className={`w-8 h-8 rounded ${
               currentPage === page
-                ? "bg-cyan-500 text-white"
+                ? "bg-blue-600/20 text-white"
                 : "text-gray-400 hover:text-white hover:bg-gray-700"
             } disabled:opacity-50`}
           >
@@ -696,12 +765,163 @@ const Pagination = ({ currentPage, totalPages, onPageChange, loading }) => {
   );
 };
 
+// Analytics Dashboard Component
+const AnalyticsDashboard = ({ analytics, loading }) => {
+  const COLORS = {
+    article: "#06b6d4", // cyan
+    video: "#8b5cf6", // purple
+    document: "#f59e0b", // amber
+    image: "#3b82f6", // blue
+    published: "#10b981", // green
+    pending: "#f59e0b", // amber
+    draft: "#6b7280", // gray
+    rejected: "#ef4444", // red
+  };
+
+  const typeData =
+    analytics?.typeDistribution?.map((item) => ({
+      name: item._id,
+      value: item.count,
+      color: COLORS[item._id.toLowerCase()] || "#6b7280",
+    })) || [];
+
+  console.log(typeData);
+
+  const statusData =
+    analytics?.statusDistribution?.map((item) => ({
+      name: item._id,
+      value: item.count,
+      color: COLORS[item._id.toLowerCase()] || "#6b7280",
+    })) || [];
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-lg">
+          <p className="text-white font-medium">{`${payload[0].name}: ${payload[0].value}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.7 }}
+      className="mt-8"
+    >
+      <div className="flex items-center space-x-2 mb-6">
+        <BarChart3 className="w-6 h-6 text-cyan-400" />
+        <h2 className="text-2xl font-bold text-white">Analytics Dashboard</h2>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Content Type Distribution */}
+        <div className="bg-white-800 rounded-xl border border-gray-700 p-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <PieChart className="w-5 h-5 text-cyan-400" />
+            <h3 className="text-lg font-semibold text-white">
+              Content Type Distribution
+            </h3>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader className="w-8 h-8 animate-spin text-cyan-400" />
+            </div>
+          ) : typeData.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsPieChart>
+                  <Pie
+                    data={typeData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {typeData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend
+                    wrapperStyle={{ color: "#d1d5db" }}
+                    formatter={(value) =>
+                      value.charAt(0).toUpperCase() + value.slice(1)
+                    }
+                  />
+                </RechartsPieChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-64 text-gray-400">
+              No type data available
+            </div>
+          )}
+        </div>
+
+        {/* Status Distribution */}
+        <div className="bg-white-700 rounded-xl border border-gray-700 p-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <BarChart3 className="w-5 h-5 text-green-400" />
+            <h3 className="text-lg font-semibold text-white">
+              Status Distribution
+            </h3>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader className="w-8 h-8 animate-spin text-green-400" />
+            </div>
+          ) : statusData.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={statusData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis
+                    dataKey="name"
+                    stroke="#9ca3af"
+                    formatter={(value) =>
+                      value.charAt(0).toUpperCase() + value.slice(1)
+                    }
+                  />
+                  <YAxis stroke="#9ca3af" />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    {statusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-64 text-gray-400">
+              No status data available
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 // Main Component
 const AdminContentPage = () => {
   // State management
   const [content, setContent] = useState([]);
   const [stats, setStats] = useState({});
+  const [analytics, setAnalytics] = useState({});
   const [loading, setLoading] = useState(true);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
@@ -709,13 +929,16 @@ const AdminContentPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pagination, setPagination] = useState({});
-  
+
   // Modal states
   const [viewModal, setViewModal] = useState({ open: false, content: null });
   const [editModal, setEditModal] = useState({ open: false, content: null });
   const [createModal, setCreateModal] = useState({ open: false });
-  const [deleteModal, setDeleteModal] = useState({ open: false, content: null });
-  
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    content: null,
+  });
+
   // Toast state
   const [toast, setToast] = useState({ show: false, message: "", type: "" });
 
@@ -740,8 +963,30 @@ const AdminContentPage = () => {
     }
   };
 
+  // Fetch analytics
+  const fetchAnalytics = async () => {
+    try {
+      setAnalyticsLoading(true);
+      const response = await api.get("/content/getContentChartAnalytics");
+      console.log(response.data.data);
+      if (response.data.success) {
+        setAnalytics(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      showToast("Failed to fetch analytics", "error");
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
   // Fetch content
-  const fetchContent = async (page = 1, search = "", status = "", type = "") => {
+  const fetchContent = async (
+    page = 1,
+    search = "",
+    status = "",
+    type = ""
+  ) => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -755,10 +1000,11 @@ const AdminContentPage = () => {
 
       const response = await api.get(`/content?${params}`);
       if (response.data.success) {
-        const { content: contentData, pagination: paginationData } = response.data.data;
+        const { content: contentData, pagination: paginationData } =
+          response.data.data;
         setContent(contentData);
         setPagination(paginationData);
-        setTotalPages(paginationData.pages);
+        setTotalPages(Math.max(1, paginationData.pages));
         setCurrentPage(paginationData.current);
       }
     } catch (error) {
@@ -791,11 +1037,18 @@ const AdminContentPage = () => {
       if (response.data.success) {
         showToast("Content created successfully", "success");
         setCreateModal({ open: false });
-        await Promise.all([fetchContent(currentPage, searchTerm, statusFilter, typeFilter), fetchStats()]);
+        await Promise.all([
+          fetchContent(currentPage, searchTerm, statusFilter, typeFilter),
+          fetchStats(),
+          fetchAnalytics(),
+        ]);
       }
     } catch (error) {
       console.error("Error creating content:", error);
-      showToast(error.response?.data?.message || "Failed to create content", "error");
+      showToast(
+        error.response?.data?.message || "Failed to create content",
+        "error"
+      );
     } finally {
       setActionLoading(false);
     }
@@ -809,17 +1062,24 @@ const AdminContentPage = () => {
       if (response.data.success) {
         showToast("Content updated successfully", "success");
         setEditModal({ open: false, content: null });
-        await Promise.all([fetchContent(currentPage, searchTerm, statusFilter, typeFilter), fetchStats()]);
+        await Promise.all([
+          fetchContent(currentPage, searchTerm, statusFilter, typeFilter),
+          fetchStats(),
+          fetchAnalytics(),
+        ]);
       }
     } catch (error) {
       console.error("Error updating content:", error);
-      showToast(error.response?.data?.message || "Failed to update content", "error");
+      showToast(
+        error.response?.data?.message || "Failed to update content",
+        "error"
+      );
     } finally {
       setActionLoading(false);
     }
   };
 
-  // Delete content
+  // Delete content with improved pagination handling
   const deleteContent = async (id) => {
     try {
       setActionLoading(true);
@@ -827,19 +1087,30 @@ const AdminContentPage = () => {
       if (response.data.success) {
         showToast("Content deleted successfully", "success");
         setDeleteModal({ open: false, content: null });
-        
-        // If current page becomes empty and it's not the first page, go to previous page
+
+        // Calculate if we need to adjust the current page
         const remainingItems = content.length - 1;
+        let targetPage = currentPage;
+
+        // If current page becomes empty and it's not the first page, go to previous page
         if (remainingItems === 0 && currentPage > 1) {
-          setCurrentPage(prev => prev - 1);
-          await Promise.all([fetchContent(currentPage - 1, searchTerm, statusFilter, typeFilter), fetchStats()]);
-        } else {
-          await Promise.all([fetchContent(currentPage, searchTerm, statusFilter, typeFilter), fetchStats()]);
+          targetPage = currentPage - 1;
+          setCurrentPage(targetPage);
         }
+
+        // Refresh data
+        await Promise.all([
+          fetchContent(targetPage, searchTerm, statusFilter, typeFilter),
+          fetchStats(),
+          fetchAnalytics(),
+        ]);
       }
     } catch (error) {
       console.error("Error deleting content:", error);
-      showToast(error.response?.data?.message || "Failed to delete content", "error");
+      showToast(
+        error.response?.data?.message || "Failed to delete content",
+        "error"
+      );
     } finally {
       setActionLoading(false);
     }
@@ -894,6 +1165,7 @@ const AdminContentPage = () => {
   // Effects
   useEffect(() => {
     fetchStats();
+    fetchAnalytics();
   }, []);
 
   useEffect(() => {
@@ -905,15 +1177,18 @@ const AdminContentPage = () => {
   }, [currentPage, searchTerm, statusFilter, typeFilter]);
 
   // Calculate display stats
-  const displayStats = useMemo(() => ({
-    totalContent: stats.totalContent || 0,
-    published: stats.published || 0,
-    pending: stats.pending || 0,
-    rejected: stats.rejected || 0,
-  }), [stats]);
+  const displayStats = useMemo(
+    () => ({
+      totalContent: stats.totalContent || 0,
+      published: stats.published || 0,
+      pending: stats.pending || 0,
+      rejected: stats.rejected || 0,
+    }),
+    [stats]
+  );
 
   return (
-    <div className="min-h-screen bg-black-900 text-white">
+    <div className="min-h-screen bg-white-900 text-white">
       <div className="p-6 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -980,7 +1255,7 @@ const AdminContentPage = () => {
               placeholder="Search content..."
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full bg-white-800 border border-gray-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
+              className="w-full bg-gray-800 border border-gray-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
             />
           </div>
 
@@ -992,7 +1267,13 @@ const AdminContentPage = () => {
               placeholder="All Types"
             />
             <Dropdown
-              options={["All Status", "Published", "Pending", "Rejected", "Draft"]}
+              options={[
+                "All Status",
+                "Published",
+                "Pending",
+                "Rejected",
+                "Draft",
+              ]}
               value={statusFilter}
               onChange={(value) => handleFilterChange("status", value)}
               placeholder="All Status"
@@ -1002,7 +1283,7 @@ const AdminContentPage = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setCreateModal({ open: true })}
-              className="bg-white-500 hover:bg-white-600 border border-gray-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+              className="bg-blue-600/10 hover:bg-blue-600/20 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Create Content</span>
@@ -1019,15 +1300,29 @@ const AdminContentPage = () => {
         >
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-black-300">
+              <thead className="bg-white-700">
                 <tr>
-                  <th className="p-4 text-left text-gray-300 font-medium">ID</th>
-                  <th className="p-4 text-left text-gray-300 font-medium">Title</th>
-                  <th className="p-4 text-left text-gray-300 font-medium">Type</th>
-                  <th className="p-4 text-left text-gray-300 font-medium">Created By</th>
-                  <th className="p-4 text-left text-gray-300 font-medium">Status</th>
-                  <th className="p-4 text-left text-gray-300 font-medium">Created On</th>
-                  <th className="p-4 text-left text-gray-300 font-medium">Actions</th>
+                  <th className="p-4 text-left text-gray-300 font-medium">
+                    ID
+                  </th>
+                  <th className="p-4 text-left text-gray-300 font-medium">
+                    Title
+                  </th>
+                  <th className="p-4 text-left text-gray-300 font-medium">
+                    Type
+                  </th>
+                  <th className="p-4 text-left text-gray-300 font-small">
+                    CreatedBy
+                  </th>
+                  <th className="p-4 text-left text-gray-300 font-medium">
+                    Status
+                  </th>
+                  <th className="p-4 text-left text-gray-300 font-medium">
+                    CreatedOn
+                  </th>
+                  <th className="p-4 text-left text-gray-300 font-medium">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -1036,7 +1331,9 @@ const AdminContentPage = () => {
                     <td colSpan="7" className="p-8 text-center">
                       <div className="flex items-center justify-center space-x-2">
                         <Loader className="w-6 h-6 animate-spin text-cyan-400" />
-                        <span className="text-gray-400">Loading content...</span>
+                        <span className="text-gray-400">
+                          Loading content...
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -1066,12 +1363,15 @@ const AdminContentPage = () => {
           {!loading && content.length > 0 && (
             <Pagination
               currentPage={currentPage}
-              totalPages={Math.max(1, totalPages)}
+              totalPages={totalPages}
               onPageChange={handlePageChange}
               loading={loading}
             />
           )}
         </motion.div>
+
+        {/* Analytics Dashboard */}
+        <AnalyticsDashboard analytics={analytics} loading={analyticsLoading} />
 
         {/* Modals */}
         {/* View Content Modal */}
@@ -1129,7 +1429,8 @@ const AdminContentPage = () => {
                 <div>
                   <h4 className="text-white font-medium">Confirm Deletion</h4>
                   <p className="text-gray-300 text-sm mt-1">
-                    Are you sure you want to delete "{deleteModal.content.title}"? This action cannot be undone.
+                    Are you sure you want to delete "{deleteModal.content.title}
+                    "? This action cannot be undone.
                   </p>
                 </div>
               </div>

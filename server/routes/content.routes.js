@@ -44,10 +44,7 @@ const validateContentCreation = [
     .isLength({ min: 2, max: 50 })
     .withMessage("Category must be between 2 and 50 characters")
     .trim(),
-  body("tags")
-    .optional()
-    .isArray()
-    .withMessage("Tags must be an array"),
+  body("tags").optional().isArray().withMessage("Tags must be an array"),
   body("tags.*")
     .optional()
     .isLength({ min: 1, max: 30 })
@@ -91,10 +88,7 @@ const validateContentUpdate = [
     .isLength({ min: 2, max: 50 })
     .withMessage("Category must be between 2 and 50 characters")
     .trim(),
-  body("tags")
-    .optional()
-    .isArray()
-    .withMessage("Tags must be an array"),
+  body("tags").optional().isArray().withMessage("Tags must be an array"),
   body("tags.*")
     .optional()
     .isLength({ min: 1, max: 30 })
@@ -118,9 +112,7 @@ const validateBulkAction = [
   body("contentIds")
     .isArray({ min: 1 })
     .withMessage("Content IDs array is required and must not be empty"),
-  body("contentIds.*")
-    .isMongoId()
-    .withMessage("Invalid content ID format"),
+  body("contentIds.*").isMongoId().withMessage("Invalid content ID format"),
   body("action")
     .isIn([
       "publish",
@@ -133,10 +125,7 @@ const validateBulkAction = [
       "update_category",
     ])
     .withMessage("Invalid bulk action"),
-  body("data")
-    .optional()
-    .isObject()
-    .withMessage("Data must be an object"),
+  body("data").optional().isObject().withMessage("Data must be an object"),
   body("data.category")
     .if(body("action").equals("update_category"))
     .notEmpty()
@@ -227,38 +216,22 @@ const validateId = [
   param("id").isMongoId().withMessage("Invalid content ID format"),
 ];
 
+
+
 // Apply middleware to all routes
 router.use(authenticateToken);
 router.use(contentRateLimit);
 
 // Public content routes (authenticated users)
-router.get(
-  "/",
-  validateQuery,
-  ContentController.getAllContent
-);
+router.get("/", validateQuery, ContentController.getAllContent);
+router.get("/getContentChartAnalytics", ContentController.getContentChartAnalytics);
+router.get("/search", validateSearchQuery, ContentController.searchContent);
 
-router.get(
-  "/search",
-  validateSearchQuery,
-  ContentController.searchContent
-);
+router.get("/categories", ContentController.getCategories);
 
-router.get(
-  "/categories",
-  ContentController.getCategories
-);
+router.get("/tags", ContentController.getTags);
 
-router.get(
-  "/tags",
-  ContentController.getTags
-);
-
-router.get(
-  "/stats",
-  requireAdmin,
-  ContentController.getContentStats
-);
+router.get("/stats", requireAdmin, ContentController.getContentStats);
 
 router.get(
   "/analytics",
@@ -277,11 +250,7 @@ router.get(
   ContentController.getDeletedContent
 );
 
-router.get(
-  "/:id",
-  validateId,
-  ContentController.getContentById
-);
+router.get("/:id", validateId, ContentController.getContentById);
 
 // Content creation and modification
 router.post(
@@ -334,21 +303,17 @@ router.post(
 );
 
 // Content management specific routes for admin dashboard
-router.get(
-  "/dashboard/overview",
-  requireAdmin,
-  async (req, res) => {
-    try {
-      const stats = await ContentController.getContentStats(req, res);
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Failed to fetch dashboard overview",
-        error: error.message,
-      });
-    }
+router.get("/dashboard/overview", requireAdmin, async (req, res) => {
+  try {
+    const stats = await ContentController.getContentStats(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch dashboard overview",
+      error: error.message,
+    });
   }
-);
+});
 
 // Health check for content service
 router.get("/health/check", (req, res) => {

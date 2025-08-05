@@ -51,8 +51,6 @@ app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use('/api/analytics-data', analyticsDataRoutes);
-app.use('/api/content', contentRoutes);
 
 // Trust proxy for accurate IP addresses
 app.set('trust proxy', 1);
@@ -80,6 +78,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/analytics-data', analyticsDataRoutes);
+app.use('/api/content', contentRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

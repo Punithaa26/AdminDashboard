@@ -8,9 +8,11 @@ const morgan = require('morgan');
 const compression = require('compression');
 const http = require('http');
 
+
 // Import routes and services
 const authRoutes = require('./routes/auth.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const contentRoutes = require("./routes/content.routes");
 const userRoutes = require('./routes/user.routes');
 const analyticsDataRoutes = require('./routes/analyticsData.routes');
 const WebSocketService = require('./services/websocketService');
@@ -49,7 +51,6 @@ app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use('/api/analytics-data', analyticsDataRoutes);
 
 // Trust proxy for accurate IP addresses
 app.set('trust proxy', 1);
@@ -57,7 +58,7 @@ app.set('trust proxy', 1);
 // Global rate limiting
 const globalRateLimit = createRateLimit(
   15 * 60 * 1000, // 15 minutes
-  100, // 100 requests per window
+  1000, // 100 requests per window
   'Too many requests from this IP'
 );
 app.use('/api', globalRateLimit);
@@ -77,6 +78,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/analytics-data', analyticsDataRoutes);
+app.use('/api/content', contentRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

@@ -1,3 +1,4 @@
+// File: /src/components/Sidebar.jsx
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -53,7 +54,12 @@ const Sidebar = () => {
       label: "Analytics",
       path: "/admin/analytics",
     },
-    { id: "logs", icon: Database, label: "System Logs", path: "/admin/logs" },
+    { 
+      id: "system-logs", 
+      icon: Database, 
+      label: "System Logs", 
+      path: "/admin/system-logs" 
+    },
     {
       id: "settings",
       icon: Settings,

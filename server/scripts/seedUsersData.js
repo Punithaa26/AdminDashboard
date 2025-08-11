@@ -1,4 +1,5 @@
 // scripts/seedUsersData.js
+const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -9,7 +10,7 @@ const seedUsersData = async () => {
   
   // Sample user data matching your frontend design
   const usersData = [
-    {
+    { id: uuidv4(),
       name: "Sarah Johnson",
       username: "sarah.johnson", 
       email: "sarah.j@company.com",
@@ -18,6 +19,7 @@ const seedUsersData = async () => {
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b332c2cd?w=40&h=40&fit=crop&crop=face"
     },
     {
+      id: uuidv4(),
       name: "Mike Chen",
       username: "mike.chen",
       email: "mike.chen@company.com", 
@@ -25,7 +27,8 @@ const seedUsersData = async () => {
       status: "Active",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"
     },
-    {
+    { id: uuidv4(),
+
       name: "Emma Davis",
       username: "emma.davis",
       email: "emma.davis@company.com",
@@ -33,7 +36,8 @@ const seedUsersData = async () => {
       status: "Inactive",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face"
     },
-    {
+    { id: uuidv4(),
+
       name: "John Smith",
       username: "john.smith", 
       email: "john.smith@company.com",
@@ -41,7 +45,8 @@ const seedUsersData = async () => {
       status: "Active", 
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
     },
-    {
+    { id: uuidv4(),
+
       name: "Lisa Wong",
       username: "lisa.wong",
       email: "lisa.wong@company.com",
@@ -49,7 +54,8 @@ const seedUsersData = async () => {
       status: "Active",
       avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=40&h=40&fit=crop&crop=face"
     },
-    {
+    { id: uuidv4(),
+
       name: "Alex Turner", 
       username: "alex.turner",
       email: "alex.turner@company.com",
@@ -57,15 +63,15 @@ const seedUsersData = async () => {
       status: "Inactive",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face"
     },
-    {
-      name: "Maria Garcia",
+    { id: uuidv4(),
+     name: "Maria Garcia",
       username: "maria.garcia", 
       email: "maria.garcia@company.com",
       role: "Admin",
       status: "Active",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop&crop=face"
     },
-    {
+    { id: uuidv4(),
       name: "David Kim",
       username: "david.kim",
       email: "david.kim@company.com", 

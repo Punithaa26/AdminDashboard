@@ -21,14 +21,15 @@ const seedUsers = async () => {
     loginCount: 15,
     isOnline: true,
     preferences: {
-      theme: 'dark',
-      language: 'en',
-      notifications: {
-        email: true,
-        push: true,
-        sms: false
-      }
-    },
+  theme: 'dark',
+  language: 'en',
+  notifications: {
+    appNotifications: true,
+    emailAlerts: true,
+    systemWarnings: true,
+    weeklySummary: false
+  }
+},
     metadata: {
       registrationSource: 'web',
       country: 'US',
@@ -53,14 +54,15 @@ const seedUsers = async () => {
       isOnline: Math.random() > 0.7, // 30% online
       lastActivity: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000), // Last 24 hours
       preferences: {
-        theme: Math.random() > 0.5 ? 'dark' : 'light',
-        language: 'en',
-        notifications: {
-          email: Math.random() > 0.3,
-          push: Math.random() > 0.5,
-          sms: Math.random() > 0.8
-        }
-      },
+  theme: Math.random() > 0.5 ? 'dark' : 'light',
+  language: 'en',
+  notifications: {
+    appNotifications: Math.random() > 0.3,
+    emailAlerts: Math.random() > 0.5,
+    systemWarnings: Math.random() > 0.2,
+    weeklySummary: Math.random() > 0.8
+  }
+},
       metadata: {
         registrationSource: Math.random() > 0.6 ? 'web' : 'mobile',
         country: ['US', 'UK', 'CA', 'AU', 'DE'][Math.floor(Math.random() * 5)],

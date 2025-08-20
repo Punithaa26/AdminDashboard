@@ -77,10 +77,11 @@ const userSchema = new mongoose.Schema(
         default: "en",
       },
       notifications: {
-        email: { type: Boolean, default: true },
-        push: { type: Boolean, default: true },
-        sms: { type: Boolean, default: false },
-      },
+  appNotifications: { type: Boolean, default: true },
+  emailAlerts: { type: Boolean, default: false },
+  systemWarnings: { type: Boolean, default: true },
+  weeklySummary: { type: Boolean, default: true }
+},
     },
     metadata: {
       registrationSource: {

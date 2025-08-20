@@ -8,18 +8,92 @@ const ChangePassword = () => {
     newPassword: '',
     confirmPassword: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle password update logic here
-    console.log('Password update requested:', formData);
+    
+    if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
+      setError('All fields are required');
+      return;
+    }
+
+    if (formData.newPassword !== formData.confirmPassword) {
+      setError('New password and confirm password do not match');
+      return;
+    }
+
+    if (formData.newPassword.length < 6) {
+      setError('New password must be at least 6 characters long');
+      return;
+    }
+
+    if (formData.currentPassword === formData.newPassword) {
+      setError('New password must be different from current password');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('No authentication token found');
+        return;
+      }
+
+      const response = await fetch('/api/settings/password', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setSuccess('Password changed successfully');
+        setFormData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError(data.message || 'Failed to change password');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      if (error.message.includes('404')) {
+        setError('Password change endpoint not found. Please check server configuration.');
+      } else if (error.message.includes('500')) {
+        setError('Server error. Please try again later.');
+      } else {
+        setError('Failed to change password. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const cardVariants = {
@@ -66,6 +140,20 @@ const ChangePassword = () => {
         <p className="text-gray-400 text-sm">Update your current password for better security.</p>
       </div>
 
+      {/* Success Message */}
+      {success && (
+        <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-400 text-sm">
+          {success}
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-sm">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-gray-200 text-sm font-medium mb-2">
@@ -79,6 +167,7 @@ const ChangePassword = () => {
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
             placeholder="Enter current password"
             required
+            disabled={loading}
           />
         </div>
 
@@ -94,6 +183,7 @@ const ChangePassword = () => {
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
             placeholder="Enter new password"
             required
+            disabled={loading}
           />
         </div>
 
@@ -109,6 +199,7 @@ const ChangePassword = () => {
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
             placeholder="Confirm new password"
             required
+            disabled={loading}
           />
         </div>
 
@@ -117,10 +208,13 @@ const ChangePassword = () => {
           whileHover="hover"
           whileTap="tap"
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+          disabled={loading}
+          className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 ${
+            loading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
           aria-label="Update password"
         >
-          Update Password
+          {loading ? 'Updating...' : 'Update Password'}
         </motion.button>
       </form>
     </motion.div>

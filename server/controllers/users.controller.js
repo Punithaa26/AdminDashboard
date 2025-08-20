@@ -15,7 +15,7 @@ class UsersController {
       const status = req.query.status || '';
       const role = req.query.role || '';
 
-      // Build filter object
+      // Build filter object with case-insensitive matching
       const filter = {};
       
       if (search) {
@@ -26,12 +26,14 @@ class UsersController {
         ];
       }
       
+      // Fix case sensitivity for status filter
       if (status && status !== 'All Status') {
-        filter.status = status;
+        filter.status = { $regex: new RegExp(`^${status}$`, 'i') };
       }
       
+      // Fix case sensitivity for role filter  
       if (role && role !== 'All Roles') {
-        filter.role = role;
+        filter.role = { $regex: new RegExp(`^${role}$`, 'i') };
       }
 
       // Get users with pagination
@@ -278,11 +280,10 @@ class UsersController {
     }
   }
 
-  // Delete user
+  // Delete user - FIXED to do permanent delete by default
   async deleteUser(req, res) {
     try {
       const { id } = req.params;
-      const { permanent = false } = req.query;
 
       // Prevent self-deletion
       if (req.user && id === req.user._id.toString()) {
@@ -292,18 +293,8 @@ class UsersController {
         });
       }
 
-      let user;
-      if (permanent === 'true') {
-        // Permanently delete user
-        user = await User.findByIdAndDelete(id);
-      } else {
-        // Soft delete (mark as inactive)
-        user = await User.findByIdAndUpdate(
-          id,
-          { status: 'Inactive', isOnline: false, lastActivity: new Date() },
-          { new: true }
-        ).select('-password');
-      }
+      // Permanently delete user (changed from soft delete)
+      const user = await User.findByIdAndDelete(id);
 
       if (!user) {
         return res.status(404).json({
@@ -314,7 +305,7 @@ class UsersController {
 
       res.json({
         success: true,
-        message: `User ${permanent === 'true' ? 'permanently deleted' : 'deactivated'} successfully`
+        message: 'User deleted successfully'
       });
 
     } catch (error) {
